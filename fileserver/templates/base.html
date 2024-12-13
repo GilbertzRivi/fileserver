@@ -1,0 +1,59 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<title>Fileserver</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<link href="{% static 'css/base.css' %}" rel="stylesheet">
+	<link rel="shortcut icon" type="image/png" href="{% static 'favico.ico' %}">
+	<script src="{% static 'js/jquery.js' %}"></script>
+	<script src="{% static 'js/jquery.minicolors.js' %}" type="application/javascript"></script>
+	<link href="{% static 'css/jquery.minicolors.css' %}" rel="stylesheet" type="text/css">
+	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+	<style>
+		html {
+			--main-color: #{{ preferred_color }};
+		}
+	</style>
+</head>
+
+<body>
+	{% block menu %}
+	{% endblock menu %}
+	{%block popups%} 
+	{%endblock popups%}
+	<header>
+		{% if messages %}
+			<div class="messages">
+				{% for message in messages %}
+					<div class="alert {% if message.tags %}alert-{{ message.tags }}"{% endif %}>
+						{{ message }}
+					</div>
+				{% endfor %}
+			</div>
+	  	{% endif %}
+		{%if request.user.is_authenticated %}
+			<a href="{% url 'logout' %}"><button class="header_button">Logout</button></a></br>
+			<a href="{% url 'change_password' %}"><button class="header_button">Change Password</button></a>
+		{%else%}
+			<a href="{% url 'login' %}"><button class="header_button">Login</button></a>
+		{%endif%}
+		<input type="input" id="color" value="#00cdee">
+		<button id="color_submit" class="header_button">Save Color</button>
+	</header>
+	<button id="close_header">></button>
+	<main>
+		{%block content%} 
+		{%endblock content%}
+	</main>
+	
+	<div id="csrf_token" class="hidden">
+		{{ csrf_token }}
+	</div>
+
+	<script src="{% static 'js/base.js' %}"></script>
+</body>
+</html>

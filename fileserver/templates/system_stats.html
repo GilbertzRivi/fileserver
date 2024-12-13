@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% block content %}
+<div id="stats_container">
+    <div id="text_stats">
+        <div>{{ disk_used|floatformat:"0" }}/{{ disk_total|floatformat:"0" }}GB used</div>
+        <div>storing {{ photo_count }} photos</div>
+        <div>serving {{ local_share_count }} local shares</div>
+        <div>serving {{ shared_file_count }} shared files</div>
+    </div>
+    <hr style="width: 100%;">
+    <div id="chart_stats">
+        <div class="chart_container">
+            <canvas id="fileChart"></canvas>
+        </div>
+
+        <div class="chart_container">
+            <canvas id="diskChart"></canvas>
+        </div>
+
+        <div class="chart_container">
+            <canvas id="shareChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Get data from Django template
+    var userData = [];
+    {% for user in user_metrics %}
+        userData.push({
+            username: "{{ user.username }}",
+            files: {{ user.files }},
+            disk: {{ user.disk|floatformat:0 }},
+            shares: {{ user.shares }}
+        });
+    {% endfor %}
+
+    // Prepare data for charts
+    var usernames = userData.map(function(user) {
+        return user.username;
+    });
+    var fileCounts = userData.map(function(user) {
+        return user.files;
+    });
+    var diskUsage = userData.map(function(user) {
+        return user.disk;
+    });
+    var shareCounts = userData.map(function(user) {
+        return user.shares;
+    });
+
+    // Create chart for number of files
+    var fileCtx = document.getElementById('fileChart').getContext('2d');
+    var fileChart = new Chart(fileCtx, {
+        type: 'bar',
+        data: {
+            labels: usernames,
+            datasets: [{
+                label: 'Number of Files',
+                data: fileCounts,
+                backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
+        }
+    });
+
+    // Create chart for disk usage
+    var diskCtx = document.getElementById('diskChart').getContext('2d');
+    var diskChart = new Chart(diskCtx, {
+        type: 'bar',
+        data: {
+            labels: usernames,
+            datasets: [{
+                label: 'Disk Usage (GB)',
+                data: diskUsage,
+                backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                borderColor: 'rgba(255, 99, 132, 1)',
+                borderWidth: 1
+            }]
+        }
+    });
+
+    // Create chart for number of shares
+    var shareCtx = document.getElementById('shareChart').getContext('2d');
+    var shareChart = new Chart(shareCtx, {
+        type: 'bar',
+        data: {
+            labels: usernames,
+            datasets: [{
+                label: 'Number of Shares',
+                data: shareCounts,
+                backgroundColor: 'rgba(75, 192, 192, 0.5)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1
+            }]
+        }
+    });
+</script>
+{% endblock %}

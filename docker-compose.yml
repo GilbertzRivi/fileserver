@@ -1,0 +1,103 @@
+services:
+  django:
+    build:
+      context: .
+      dockerfile: ./django.dockerfile
+    env_file:
+      - path: ./.env
+    volumes:
+      - ./fileserver:/fileserver
+      - ./fileserver_static:/fileserver/web/staticfiles
+      - /raid:/raid
+    ports:
+      - 2137:8000
+    container_name: fileserver-django
+    command: /bin/sh -c "sleep 2 && python3 /fileserver/manage.py collectstatic --noinput && python3 /fileserver/manage.py makemigrations && python3 /fileserver/manage.py migrate && cd /fileserver && gunicorn fileserver.wsgi:application -k gthread --threads=4 --workers=4 --max-requests 500 --max-requests-jitter 50 --timeout 0 --bind 0.0.0.0:8000"
+    depends_on:
+      - db
+      - redis
+    restart: always
+    networks:
+      - fileserver
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+
+  db:
+    image: postgres:13.0-alpine
+    ports:
+      - 5432:5432
+    volumes:
+      - ./postgres:/var/lib/postgresql/data/
+    env_file:
+      - path: ./.env
+    restart: always
+    container_name: fileserver-postgres
+    networks:
+      - fileserver
+    deploy:
+      resources:
+        limits:
+          memory: 64M
+
+  redis:
+    image: redis:7-alpine
+    container_name: fileserver-redis
+    restart: always
+    networks:
+      - fileserver
+    deploy:
+      resources:
+        limits:
+          memory: 64M
+
+  celery_worker:
+    build:
+      context: .
+      dockerfile: ./django.dockerfile
+    container_name: fileserver-worker
+    command: /bin/sh -c "sleep 3 && cd fileserver && celery --app fileserver worker -l INFO -c 4"
+    env_file:
+      - path: ./.env
+    volumes:
+      - ./fileserver:/fileserver
+      - /raid:/raid
+    depends_on:
+      - redis
+      - db
+      - django
+    restart: always
+    networks:
+      - fileserver
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+
+  celery_beat:
+    build:
+      context: .
+      dockerfile: ./django.dockerfile
+    container_name: fileserver-beat
+    command: /bin/sh -c "sleep 4 && cd fileserver && celery --app fileserver beat -l INFO"
+    env_file:
+      - path: ./.env
+    volumes:
+      - ./fileserver:/fileserver
+    depends_on:
+      - redis
+      - db
+      - django
+    restart: always
+    networks:
+      - fileserver
+    deploy:
+      resources:
+        limits:
+          memory: 64M
+
+networks:
+  fileserver:
+    driver: bridge
+    name: fileserver

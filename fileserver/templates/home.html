@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+
+{% block menu %}
+
+<div id="menu">
+    <button id="create_folder">Create Folder</button>
+    <button id="return">Return</button>
+    <button id="delete_all">Delete All</button>
+    <button id="download_all">Download All</button>
+    <button id="shared_links">Shared links</button>
+</div>
+
+{% endblock menu %}
+
+{% block popups %}
+
+<div class="shadow hidden">
+    <div id="delete_all_popup" class="popup">
+        <span>Do you really want to delete all files in current directory?</span>
+        <div id="delete_all_buttons" class="popup_buttons">
+            <button id="delete_all_confirm">Yes</button>
+            <button id="delete_all_deny">No</button>
+        </div>
+    </div>
+</div>
+
+<div class="shadow hidden">
+    <div id="filenames_overlap" class="popup">
+        <span>The names of the files you want to upload coincide with those already existing on the server. In order to prevent them from being overwritten, operation was interrupted.</span>
+        <button id="filenames_ok">Ok</button>
+    </div>
+</div>
+
+<div class="shadow hidden">
+    <div id="media_popup" class="popup">
+        <span></span>
+        <div class="bar_container">
+            <div class="loading_bar"></div>
+        </div>
+        <button id="media_right">-></button>
+        <button id="media_left"><-</button>
+        <button id="media_close">X</button>
+        <button id="media_download">Download</button>
+        <div id="media_container"></div>
+        <p id="file_data"></p>
+    </div>
+</div>
+
+<div class="shadow hidden">
+    <div id="error_files" class="popup">
+        <span>There occured a problem while uploading files listed bellow, they were not uploaded</span>
+            <div id="error_files_files"></div>
+        <button id="error_files_ok">Ok</button>
+    </div>
+</div>
+
+<div class="shadow hidden">
+    <div id="options_popup" class="popup">
+        <div class="scroll">
+            <div id="delete_options">
+                <span></span>
+                <div id="delete_buttons" class="popup_buttons">
+                    <button id="delete_confirm">Yes, delete</button>
+                </div>
+            </div>
+            <hr>
+            <div id="share_options">
+                <span>Create a link to the selected file. Anyone with this link will be able to download the file. The link is valid 7d from the moment of creation.</span>
+                <button id="share_button">Generate share link</button>
+                <span id="share_link_span">Link will appear here</span>
+            </div>
+            <hr>
+            <div id="name_options">
+                <span>if you would like to change the file name, enter it here:</span>
+                <input type="text" id="change_name_text">
+                <button id="change_name">Change filename</button>
+            </div>
+            <hr>
+            <div id="local_share_options">
+                <span id="local_share_span">Select the user to whom you want to share the file</span>
+                <select id="local_share_select">
+                </select>
+                <button id="local_share_button">Share</button>
+            </div>
+            <hr>
+            <div id="shared_to">
+                <span id="shared_to_span">The folder has not yet been shared</span>
+                <div id="shared_to_container"></div>
+            </div>
+        </div>
+        <button id="close_options">X</button>
+    </div>
+</div>
+
+<div class="shadow hidden">
+    <div id="create_folder_popup" class="popup">
+        <span>Provide folder name: </span>
+        <input type="text" id="create_folder_text">
+        <div id="create_folder_buttons" class="popup_buttons">
+            <button id="create_folder_confirm">Create</button>
+            <button id="create_folder_deny">Abord</button>
+        </div>
+    </div>
+</div>
+
+<div class="shadow hidden">
+    <div id="shared_links_popup" class="popup">
+        <button id="close_shared_links">X</button>
+        <div class="scroll">
+            <span>Files and links you generated</span>
+            <div id="shared_links_container"></div>
+        </div>
+    </div>
+</div>
+
+<div class="shadow hidden">
+    <div id="shared_files_popup" class="popup">
+        <button id="close_shared_files">X</button>
+        <span>Files you are now sharing</span>
+        <div id="shared_files_container">
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block content %}
+    
+<div id="upload">
+    <form id="upload_form" method='POST' enctype='multipart/form-data'>
+        <label for="files">Select Files</label>
+        <input required id="files" name="files" type="file" multiple>
+        <button class="submit" type="submit">Upload</button>
+    </form>
+    <div class="bar_container">
+        <div class="loading_bar"></div>
+    </div>
+    <div id="loading_status">0MB / 0MB</div>
+</div>
+<hr>
+<input id="search" type="text" placeholder="Search">
+<div id="files_container">
+</div>
+
+{% endblock %}
