@@ -14,16 +14,6 @@ This project is a file management web application built using Django. It provide
 - **Image**: `png`, `jpg`, `jpeg`, `gif`, `webp`
 - other formats wont be displayed in the web
 
-## Usage
-### Key Endpoints
-- **Home**: `/home/` - Displays user files and folders.
-- **Sign In**: `/login/` - User authentication.
-- **Sign Out**: `/logout/` - End user session.
-- **File Upload**: `/upload/` - Handles file uploads.
-- **Download**: `/download/<directory>/<file>/` - Download files.
-- **Generate Thumbnail**: `/get_thumbnail/<directory>/<file>/` - Generate media thumbnails.
-- **System Stats**: `/system_stats/` - View admin system metrics.
-
 ## Contributing
 Contributions are welcome! Please submit a pull request with a detailed description of the changes.
 
